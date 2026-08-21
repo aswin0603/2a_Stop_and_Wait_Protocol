@@ -12,33 +12,52 @@ To write a python program to perform stop and wait protocol
 ### client.py
 ```python
 import socket
-s=socket.socket()
-s.bind(('localhost', 8001))
-s.listen(5)
-c,addr=s.accept()
-while True:
-    i=input("Enter a data: ")
-    c.send(i.encode())
-    ack=c.recv(1024).decode()
-    if ack:
-        print(ack)
-        continue
-    else:
-        c.close()
-        break
+
+s = socket.socket()
+s.connect(('localhost', 8001))
+
+n = int(input("Enter the number of frames: "))
+
+for i in range(1, n + 1):
+    data = input(f"Enter data for Frame {i}: ")
+
+    print("Sending:", data)
+    s.send(data.encode())
+
+    ack = s.recv(1024).decode()
+    print("Server:", ack)
+
+s.close()
 ```
 ### server.py
 ```python
 import socket
-s=socket.socket()
-s.connect(('localhost', 8001))
+
+s = socket.socket()
+s.bind(('localhost', 8001))
+s.listen(1)
+
+print("Waiting for client...")
+c, addr = s.accept()
+print("Client connected")
+
 while True:
-    print(s.recv(1024).decode())
-    s.send("Acknowledgement Received frome the server".encode())
+    data = c.recv(1024).decode()
+
+    if not data:
+        break
+
+    print("Received:", data)
+
+    c.send("ACK".encode())
+
+c.close()
+s.close()
 ```
 ## OUTPUT
 
-<img width="1742" height="1031" alt="image" src="https://github.com/user-attachments/assets/5efceeb9-8860-418d-b411-6b6c69a3957a" />
+<img width="1742" height="1031" alt="image" src="https://github.com/user-attachments/assets/d465d124-836d-4b18-b62a-5b7dd54bb13b" />
+
 
 
 ## RESULT
